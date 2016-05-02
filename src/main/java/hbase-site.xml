@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+<!--
+/**
+ *habse、zookeeper配置
+ */
+-->
+<configuration>
+    <property>
+        <name>hbase.zookeeper.quorum</name>
+        <value>hbase01.andy0010.com</value>
+    </property>
+    <property>
+        <name>hbase.zookeeper.property.clientPort</name>
+        <value>2181</value>
+    </property>
+    <property>
+        <name>hbase.master</name>
+        <value>hbase01.andy0010.com:60010</value>
+    </property>
+</configuration>
