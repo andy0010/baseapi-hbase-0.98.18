@@ -1,32 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 
  <beans xmlns="http://www.springframework.org/schema/beans"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:p="http://www.springframework.org/schema/p"
 	xmlns:context="http://www.springframework.org/schema/context"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans	http://www.springframework.org/schema/beans/spring-beans-3.0.xsd	http://www.springframework.org/schema/context	http://www.springframework.org/schema/context/spring-context-3.0.xsd">
 	
 	<!-- hbase 模拟用户输入 -->
-	<bean id="baseHbaseInput" class="com.andy0010.hbase.baseapi.BaseHbaseInput">
-		<property name="table" value="table1"/>
-		<property name="cf" value="cf1"/>
-		<property name="qualifier" value="qualifier1"/>
-		<property name="rowKey" value="row1"/>
-		<property name="value" value="value1"/>
-	</bean>
-	
-	
+	<bean id="baseHbaseInput" class="com.andy0010.hbase.baseapi.BaseHbaseInput"
+		p:table = "table1"
+		p:cf = "cf1"
+		p:qualifier = "qualifier1"
+		p:rowKey = "row1"
+		p:value = "value1"
+	/>
+		
 	<!-- hbase 工具类 -->
-	<bean id="baseHbaseHelper" class="com.andy0010.hbase.baseapi.BaseHbaseHelper">
-		<property name="input" ref="baseHbaseInput"/>
-		<property name="hbaseAdmin" ref="hbaseAdmin"/>
-		<property name="hTable" ref="hTable"/>
-		<property name="descriptor" ref="descriptor"/>
-		<property name="hColumnDescriptor" ref="hColumnDescriptor"/>
-		<property name="put" ref="put"/>
-		<property name="delete" ref="delete"/>
-		<property name="get" ref="get"/>
-		<property name="scan" ref="scan"/>
-	</bean>
+	<bean id="baseHbaseHelper" class="com.andy0010.hbase.baseapi.BaseHbaseHelper"
+		p:input-ref="baseHbaseInput"
+		p:hbaseAdmin-ref="hbaseAdmin"
+		p:hTable-ref="hTable"
+		p:descriptor-ref="descriptor"
+		p:hColumnDescriptor-ref="hColumnDescriptor"
+		p:put-ref="put"
+		p:delete-ref="delete"
+		p:get-ref="get"
+		p:scan-ref="scan"
+	/>
 	
 	<!-- hbase配置信息bean -->
 	<bean id="hBaseConfiguration" class="org.apache.hadoop.hbase.HBaseConfiguration"/>
