@@ -11,10 +11,11 @@
 		p:table = "table1"
 		p:cf = "cf1"
 		p:qualifier = "qualifier1"
-		p:rowKey = "row1"
-		p:value = "value1"
+		p:rowKey = "row"
+		p:value = "value--andy0010"
 	/>
-		
+	
+	
 	<!-- hbase 工具类 -->
 	<bean id="baseHbaseHelper" class="com.andy0010.hbase.baseapi.BaseHbaseHelper"
 		p:input-ref="baseHbaseInput"
@@ -22,11 +23,11 @@
 		p:hTable-ref="hTable"
 		p:descriptor-ref="descriptor"
 		p:hColumnDescriptor-ref="hColumnDescriptor"
-		p:put-ref="put"
 		p:delete-ref="delete"
+		p:puts-ref="puts"
 		p:get-ref="get"
-		p:scan-ref="scan"
-	/>
+		p:scan-ref="scan"/>
+	
 	
 	<!-- hbase配置信息bean -->
 	<bean id="hBaseConfiguration" class="org.apache.hadoop.hbase.HBaseConfiguration"/>
@@ -65,8 +66,7 @@
 	</bean>
 	
 	<!-- hbase put构造器bean -->
-	<bean id="put" class="org.apache.hadoop.hbase.client.Put">
-		<constructor-arg value="#{baseHbaseInput.rowKey.getBytes()}"/>
+	<bean id="puts" class="java.util.ArrayList">
 	</bean>
 	
 	<!-- hbase delete构造器bean -->
@@ -82,6 +82,5 @@
 	<!-- hbase scan构造器bean -->
 	<bean id="scan" class="org.apache.hadoop.hbase.client.Scan">
 	</bean>
-		
 	
 </beans>

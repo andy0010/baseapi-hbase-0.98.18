@@ -1,6 +1,8 @@
 package com.andy0010.hbase.baseapi;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.hadoop.hbase.HColumnDescriptor;
 import org.apache.hadoop.hbase.HTableDescriptor;
@@ -32,7 +34,7 @@ public class BaseHbaseHelper {
 	private HColumnDescriptor hColumnDescriptor;
 	private HBaseAdmin hbaseAdmin;
 	private HTable hTable;
-	private Put put;
+	private List<Put> puts;
 	private Delete delete;
 	private Get get;
 	private Scan scan;
@@ -44,9 +46,9 @@ public class BaseHbaseHelper {
 		BaseHbaseHelper helper = (BaseHbaseHelper) context.getBean("baseHbaseHelper");
 //		helper.dropTable();
 //		helper.createTable();
-//		helper.putData();
+		helper.putData();
 //		helper.getData();
-		helper.deleteData();
+//		helper.deleteData();
 		helper.scanTable();
 	}
 	
@@ -82,11 +84,18 @@ public class BaseHbaseHelper {
 	 * @return void 返回类型
 	 */
 	public void putData() throws IOException {
-	    System.out.println("Put data " + input.getRowKey());
-	    put.add(Bytes.toBytes(input.getCf()), Bytes.toBytes(input.getQualifier()), Bytes.toBytes(input.getValue()));
-	    hTable.put(put);
+	    System.out.println("Put data... ");
+	   	    
+	    for(int i=0; i < 5; i++){
+	    	byte[] rowKey = (input.getRowKey()+"_" + i).getBytes();
+	    	Put put = new Put(rowKey);
+	    	put.add(Bytes.toBytes(input.getCf()), Bytes.toBytes(input.getQualifier()), Bytes.toBytes(input.getValue()));
+	    	puts.add(put);
+	    }
+	    
+	    hTable.put(puts);
 	    hTable.flushCommits();
-	    System.out.println("Success put data " + input.getRowKey());
+	    System.out.println("Success put data... ");
 	}
 	
 	/**
@@ -174,11 +183,11 @@ public class BaseHbaseHelper {
 	public void sethColumnDescriptor(HColumnDescriptor hColumnDescriptor) {
 		this.hColumnDescriptor = hColumnDescriptor;
 	}
-	public Put getPut() {
-		return put;
+	public List<Put> getPuts() {
+		return puts;
 	}
-	public void setPut(Put put) {
-		this.put = put;
+	public void setPuts(List<Put> puts) {
+		this.puts = puts;
 	}
 	public Delete getDelete() {
 		return delete;
