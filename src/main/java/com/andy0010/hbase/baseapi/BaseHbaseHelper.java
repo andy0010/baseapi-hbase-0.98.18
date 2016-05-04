@@ -46,10 +46,11 @@ public class BaseHbaseHelper {
 		BaseHbaseHelper helper = (BaseHbaseHelper) context.getBean("baseHbaseHelper");
 //		helper.dropTable();
 //		helper.createTable();
-		helper.putData();
+//		helper.putData();
 //		helper.getData();
 //		helper.deleteData();
-		helper.scanTable();
+//		helper.scanTable();
+		helper.compareAndSet();
 	}
 	
 	/**
@@ -157,6 +158,61 @@ public class BaseHbaseHelper {
 	    System.out.println("Success drop table " + input.getTable());
 	}
 	
+	/**
+	 * 
+	 * @Title: compareAndSet
+	 * @Description: 使用原子性操作compare-and-set
+	 * @param @throws IOException
+	 * @return void 返回类型
+	 */
+	public void compareAndSet() throws IOException{
+		byte[] row1 = "row1".getBytes();
+    	Put put1 = new Put(row1);
+    	put1.add("cf1".getBytes(), "qual1".getBytes(), "value1".getBytes());
+    	/**
+    	 * case:row1中列族为cf1的value为null
+    	 * action:
+    	 * 		满足时，向row1插入put1
+    	 * 		不满足时，返回false
+    	 */
+		boolean res1 = hTable.checkAndPut("row1".getBytes(), "cf1".getBytes(), "qual1".getBytes(), null, put1);
+		System.out.println("1. Put row_key:" + new String(row1) +  ", cf:" + "cf1"+ ", applied  " + res1);
+		
+		/**
+    	 * case:row1中列族为cf1的value为null
+    	 * action:
+    	 * 		满足时，向row1插入put1
+    	 * 		不满足时，返回false
+    	 */
+		boolean res2 = hTable.checkAndPut("row1".getBytes(), "cf1".getBytes(), "qual1".getBytes(), null, put1);
+		System.out.println("2. Put row_key:" + new String(row1) +  ", cf:" + "cf1" + ", applied  " + res2);
+		
+		Put put2 = new Put(row1);
+    	put2.add("cf1".getBytes(), "qual2".getBytes(), "value2".getBytes());
+    	/**
+    	 * case:row1中列族为cf1的value为value1
+    	 * action:
+    	 * 		满足时，向row1插入put2
+    	 * 		不满足时，返回false
+    	 */
+		boolean res3 = hTable.checkAndPut(row1, "cf1".getBytes(), "qual1".getBytes(), "value1".getBytes(), put2);
+		System.out.println("3. Put row_key:" + new String(row1) +  ", cf:" + "cf1" + ", applied  " + res3);
+		
+		byte[] row2 = "row2".getBytes();
+		Put put3 = new Put(row2);
+    	put3.add("cf1".getBytes(), "qual2".getBytes(), "value3".getBytes());
+    	
+    	/**
+    	 * case:row1中列族为cf1的value为value1
+    	 * action:
+    	 * 		满足时，向row1插入put3
+    	 * 		不满足时，返回false
+    	 * 此处，由于checkAndPut的row key为row1,与put3的row key row2不符，抛异常
+    	 */
+		boolean res4 = hTable.checkAndPut(row1, "cf1".getBytes(), "qual1".getBytes(), "value1".getBytes(), put3);
+		System.out.println("4. Put row_key:" + new String(row2) +  ", cf:" + "cf1" + ", applied  " + res4);
+		
+	}
 	
 	
 	public HBaseAdmin getHbaseAdmin() {
