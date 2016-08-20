@@ -56,6 +56,7 @@ public class BaseHbaseHelper {
 	private Scan scan;
 	
 	@Autowired
+	@Input
 	private BaseHbaseInput baseHbaseInput;
 	
 	public static void main(String[] args) throws IOException{

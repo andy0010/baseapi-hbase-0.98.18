@@ -9,6 +9,7 @@ package com.andy0010.hbase.baseapi;
  * @date 2016年5月1日 下午1:14:51
  * @version V1.0
  */
+@Input
 public class BaseHbaseInput{
 	
 	private String table;
