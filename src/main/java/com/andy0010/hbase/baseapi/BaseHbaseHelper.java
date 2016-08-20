@@ -49,8 +49,8 @@ public class BaseHbaseHelper {
 //		helper.putData();
 //		helper.getData();
 //		helper.deleteData();
-//		helper.scanTable();
-		helper.compareAndSet();
+		helper.scanTable();
+//		helper.compareAndSet();
 	}
 	
 	/**
@@ -102,15 +102,19 @@ public class BaseHbaseHelper {
 	/**
 	 * 
 	 * @Title: getData
-	 * @Description: 根据行键获取数据
+	 * @Description: 根据行键获取数据,批量
 	 * @param @throws IOException
 	 * @return void 返回类型
 	 */
 	public void getData() throws IOException {
-	    System.out.println("Get data " + input.getRowKey());
-	    Result r = hTable.get(get);
-	    byte[] value = r.getValue(Bytes.toBytes(input.getCf()), Bytes.toBytes(input.getQualifier()));
-	    System.out.println("Get value: " + Bytes.toString(value));
+		for(int i=0; i < 5; i++){
+			String rowKey = input.getRowKey()+"_" + i;
+			System.out.println("Get data " + rowKey);
+			Get get = new Get(rowKey.getBytes());
+			Result r = hTable.get(get);
+	    	byte[] value = r.getValue(Bytes.toBytes(input.getCf()), Bytes.toBytes(input.getQualifier()));
+	    	System.out.println("Get value: " + Bytes.toString(value));
+		}
 	}
 	
 	/**
