@@ -16,6 +16,7 @@ import org.apache.hadoop.hbase.client.Result;
 import org.apache.hadoop.hbase.client.ResultScanner;
 import org.apache.hadoop.hbase.client.Scan;
 import org.apache.hadoop.hbase.util.Bytes;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
@@ -30,26 +31,43 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
  */
 public class BaseHbaseHelper {
 	
+	@Autowired
 	private HTableDescriptor descriptor;
+	
+	@Autowired
 	private HColumnDescriptor hColumnDescriptor;
+	
+	@Autowired
 	private HBaseAdmin hbaseAdmin;
+	
+	@Autowired
 	private HTable hTable;
+	
+	@Autowired(required=false)
 	private List<Put> puts;
+	
+	@Autowired
 	private Delete delete;
+	
+	@Autowired
 	private Get get;
+	
+	@Autowired
 	private Scan scan;
 	
-	private BaseHbaseInput input;
+	@Autowired
+	private BaseHbaseInput baseHbaseInput;
 	
 	public static void main(String[] args) throws IOException{
 		ApplicationContext context = new ClassPathXmlApplicationContext("baseHbase.xml");
 		BaseHbaseHelper helper = (BaseHbaseHelper) context.getBean("baseHbaseHelper");
-//		helper.dropTable();
-//		helper.createTable();
+		helper.dropTable();
+		helper.createTable();
 //		helper.putData();
 //		helper.getData();
+//		helper.singleGetData();
 //		helper.deleteData();
-		helper.scanTable();
+//		helper.scanTable();
 //		helper.compareAndSet();
 	}
 	
@@ -66,15 +84,15 @@ public class BaseHbaseHelper {
 		 */
 	    descriptor.addFamily(hColumnDescriptor);
 	    
-	    System.out.println("Create table " + input.getTable());
+	    System.out.println("Create table " + baseHbaseInput.getTable());
 	    
 	    try {
 	      hbaseAdmin.createTable(descriptor);
 	    } catch(TableExistsException e) {
-	      System.out.println("Table " + input.getTable() + " exists");
+	      System.out.println("Table " + baseHbaseInput.getTable() + " exists");
 	    }
 	    
-	    System.out.println("Success create table " + input.getTable());
+	    System.out.println("Success create table " + baseHbaseInput.getTable());
 	}
 	
 	/**
@@ -88,9 +106,9 @@ public class BaseHbaseHelper {
 	    System.out.println("Put data... ");
 	   	    
 	    for(int i=0; i < 5; i++){
-	    	byte[] rowKey = (input.getRowKey()+"_" + i).getBytes();
+	    	byte[] rowKey = (baseHbaseInput.getRowKey()+"_" + i).getBytes();
 	    	Put put = new Put(rowKey);
-	    	put.add(Bytes.toBytes(input.getCf()), Bytes.toBytes(input.getQualifier()), Bytes.toBytes(input.getValue()));
+	    	put.add(Bytes.toBytes(baseHbaseInput.getCf()), Bytes.toBytes(baseHbaseInput.getQualifier()), Bytes.toBytes(baseHbaseInput.getValue()));
 	    	puts.add(put);
 	    }
 	    
@@ -107,14 +125,32 @@ public class BaseHbaseHelper {
 	 * @return void 返回类型
 	 */
 	public void getData() throws IOException {
+//		System.out.println(baseHbaseInput);
 		for(int i=0; i < 5; i++){
-			String rowKey = input.getRowKey()+"_" + i;
+			String rowKey = baseHbaseInput.getRowKey()+"_" + i;
 			System.out.println("Get data " + rowKey);
 			Get get = new Get(rowKey.getBytes());
 			Result r = hTable.get(get);
-	    	byte[] value = r.getValue(Bytes.toBytes(input.getCf()), Bytes.toBytes(input.getQualifier()));
+	    	byte[] value = r.getValue(Bytes.toBytes(baseHbaseInput.getCf()), Bytes.toBytes(baseHbaseInput.getQualifier()));
 	    	System.out.println("Get value: " + Bytes.toString(value));
 		}
+	}
+	
+	/**
+	 * 
+	 * @Title: singleGetData
+	 * @Description: 根据行键获取数据
+	 * @param @throws IOException
+	 * @return void 返回类型
+	 */
+	public void singleGetData() throws IOException {
+		
+			String rowKey = baseHbaseInput.getRowKey()+"_" + 1;
+			System.out.println("Get data " + rowKey);
+			Get get = new Get(rowKey.getBytes());
+			Result r = hTable.get(get);
+	    	byte[] value = r.getValue(Bytes.toBytes(baseHbaseInput.getCf()), Bytes.toBytes(baseHbaseInput.getQualifier()));
+	    	System.out.println("Get value: " + Bytes.toString(value));
 	}
 	
 	/**
@@ -125,8 +161,8 @@ public class BaseHbaseHelper {
 	 * @return void 返回类型
 	 */
 	public void scanTable() throws IOException {
-	    System.out.println("Scan table " + input.getTable());
-	    scan.addColumn(Bytes.toBytes(input.getCf()), Bytes.toBytes(input.getQualifier()));
+	    System.out.println("Scan table " + baseHbaseInput.getTable());
+	    scan.addColumn(Bytes.toBytes(baseHbaseInput.getCf()), Bytes.toBytes(baseHbaseInput.getQualifier()));
 	    
 	    ResultScanner scanner = hTable.getScanner(scan);
 	    for (Result res : scanner) {
@@ -142,7 +178,7 @@ public class BaseHbaseHelper {
 	 * @return void 返回类型
 	 */
 	public void deleteData() throws IOException {
-	    System.out.println("Delete row " + input.getRowKey());
+	    System.out.println("Delete row " + baseHbaseInput.getRowKey());
 	    hTable.delete(delete);
 	}
 	
@@ -154,12 +190,12 @@ public class BaseHbaseHelper {
 	 * @return void 返回类型
 	 */
 	public void dropTable() throws IOException {
-	    System.out.println("Drop table " + input.getTable());
+	    System.out.println("Drop table " + baseHbaseInput.getTable());
 
-	    hbaseAdmin.disableTable(input.getTable());
-	    hbaseAdmin.deleteTable(input.getTable());
+	    hbaseAdmin.disableTable(baseHbaseInput.getTable());
+	    hbaseAdmin.deleteTable(baseHbaseInput.getTable());
 	    
-	    System.out.println("Success drop table " + input.getTable());
+	    System.out.println("Success drop table " + baseHbaseInput.getTable());
 	}
 	
 	/**
@@ -217,62 +253,4 @@ public class BaseHbaseHelper {
 		System.out.println("4. Put row_key:" + new String(row2) +  ", cf:" + "cf1" + ", applied  " + res4);
 		
 	}
-	
-	
-	public HBaseAdmin getHbaseAdmin() {
-		return hbaseAdmin;
-	}
-	public void setHbaseAdmin(HBaseAdmin hbaseAdmin) {
-		this.hbaseAdmin = hbaseAdmin;
-	}
-	public HTable gethTable() {
-		return hTable;
-	}
-	public void sethTable(HTable hTable) {
-		this.hTable = hTable;
-	}
-	public HTableDescriptor getDescriptor() {
-		return descriptor;
-	}
-	public void setDescriptor(HTableDescriptor descriptor) {
-		this.descriptor = descriptor;
-	}
-	public HColumnDescriptor gethColumnDescriptor() {
-		return hColumnDescriptor;
-	}
-	public void sethColumnDescriptor(HColumnDescriptor hColumnDescriptor) {
-		this.hColumnDescriptor = hColumnDescriptor;
-	}
-	public List<Put> getPuts() {
-		return puts;
-	}
-	public void setPuts(List<Put> puts) {
-		this.puts = puts;
-	}
-	public Delete getDelete() {
-		return delete;
-	}
-	public void setDelete(Delete delete) {
-		this.delete = delete;
-	}
-	public Get getGet() {
-		return get;
-	}
-	public void setGet(Get get) {
-		this.get = get;
-	}
-	public Scan getScan() {
-		return scan;
-	}
-	public void setScan(Scan scan) {
-		this.scan = scan;
-	}
-	public BaseHbaseInput getInput() {
-		return input;
-	}
-	public void setInput(BaseHbaseInput input) {
-		this.input = input;
-	}
-	
-	
 }
