@@ -1,5 +1,7 @@
 package com.andy0010.hbase.baseapi;
 
+import org.springframework.beans.factory.annotation.Value;
+
 /**
  * 
  * @Title: BaseHbaseInput.java
@@ -12,10 +14,19 @@ package com.andy0010.hbase.baseapi;
 @Input
 public class BaseHbaseInput{
 	
+	@Value("table1")
 	private String table;
+	
+	@Value("cf1")
 	private String cf;
+	
+	@Value("qualifier1")
 	private String qualifier;
+	
+	@Value("row")
 	private String rowKey;
+	
+	@Value("value--andy0010")
 	private String value;
 
 	public String getTable() {
